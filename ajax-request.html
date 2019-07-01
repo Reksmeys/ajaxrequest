@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<!-- Bootstrap core CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+<body>
+        <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 
+                </tbody>
+              </table>
+    <script>
+        function loadDataJS(){
+            var x = new XMLHttpRequest();
+            x.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    //json.parse 
+                    // console.log(JSON.parse(this.response));
+                    console.log(this.response)
+                }
+            }
+            x.open("GET", "http://api-ams.me/v1/api/articles?page=1&limit=15")
+            x.send()
+        }
+        //request data by jquery function
+        function loadData(){
+            $.ajax({
+                url: "http://api-ams.me/v1/api/articles?page=1&limit=15",
+                method: "GET",
+                success: function(response){
+                    console.log(response);
+                    showDataToTable(response.DATA)
+                },
+                error: function(er){
+                    console.log(er)
+                }
+            })
+        }
+
+        function showDataToTable(article){
+            var content = ""
+            for(a of article){
+                content +=`
+                    <tr>
+                        <td>${a.ID}</td>
+                        <td>${a.TITLE}</td>
+                        <td>${a.DESCRIPTION}</td>
+                        <td><img class="img-thumbnail" src=${a.IMAGE} /></td>
+                    </tr>
+                `
+            }
+            $('tbody').html(content)
+        }
+        loadData()
+     
+        // loadDataJS()
+
+    </script>
+</body>
+</html>

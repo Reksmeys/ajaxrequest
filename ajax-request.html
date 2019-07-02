@@ -28,6 +28,11 @@
                 </tbody>
               </table>
     <script>
+        $(document).ready(function(){
+            // loadData()
+            // loadImage()
+            fetchArticle()
+        })
         function loadDataJS(){
             var x = new XMLHttpRequest();
             x.onreadystatechange = function(){
@@ -43,10 +48,12 @@
         //request data by jquery function
         function loadData(){
             $.ajax({
-                url: "http://api-ams.me/v1/api/articles?page=1&limit=15",
+                url: "http://api-ams.me/v1/api/articles?page=1&limit=30",
                 method: "GET",
                 success: function(response){
                     console.log(response);
+
+                    //append data in table
                     showDataToTable(response.DATA)
                 },
                 error: function(er){
@@ -64,14 +71,66 @@
                         <td>${a.TITLE}</td>
                         <td>${a.DESCRIPTION}</td>
                         <td><img class="img-thumbnail" src=${a.IMAGE} /></td>
+                        <td><button class="btn btn-outline-primary wave-effect" onclick="deleteArticle(this)">DELETE</button><button class="btn btn-outline-primary wave-effect">EDIT</button></td>
                     </tr>
                 `
             }
             $('tbody').html(content)
         }
-        loadData()
-     
-        // loadDataJS()
+        function loadImage(){
+            $.ajax({
+               url: "https://jsonplaceholder.typicode.com/photos",
+               method: "GET",
+               success: function(res){
+                   console.log(res);
+                   loadTable(res)
+               } ,
+               error: function(er){
+                   console.log(er)
+               }
+            })
+        }
+        function loadTable(data){
+            var content = ""
+            for(a of data){
+                content +=`
+                    <tr>
+                        <td>${a.albumId}</td>
+                        <td>${a.id}</td>
+                        <td>${a.title}</td>
+                        <td><img class="img-thumbnail" src=${a.thumbnailUrl} /></td>
+                        <td><button class="btn btn-outline-primary wave-effect">DELETE</button><button class="btn btn-outline-primary wave-effect">EDIT</button></td>
+                    </tr>
+                `
+            }
+            $('tbody').html(content)
+        }
+
+        //load data using $.get(url, )
+        function fetchArticle(){
+            $.get("http://api-ams.me/v1/api/articles?page=1&limit=30", function(res){
+                // console.log(res.DATA);
+                // console.log(xhr);
+                showDataToTable(res.DATA)
+                
+            })
+        }
+
+        function deleteArticle(btn){
+            let id = 113078;
+            $.ajax({
+                url: "http://api-ams.me/v1/api/articles/"+id,
+                method: "DELETE",
+                success: function(res){
+                    fetchArticle()
+                },
+                error: function(er){
+                    console.log(er);
+                }
+            })
+        }
+      
+   
 
     </script>
 </body>

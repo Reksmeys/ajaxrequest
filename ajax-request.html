@@ -27,12 +27,13 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="titleModal">Modal title</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
+                    <input type="text" name="" id="idArticle" hidden>
                     <input type="text" name="" id="title" placeholder="title">
                     <input type="text" name="" id="desc" placeholder="description">
                 </div>
@@ -58,24 +59,28 @@
     </table>
     <script>
         $(document).ready(function () {
-            // loadData()
-            // loadImage()
+            fetchArticle()
             let article = {
                 TITLE: "",
                 DESCRIPTION: ""
             }
-
-            fetchArticle()
             $('#callModal').click(function(){
                 $('#articleModal').modal('show')
+                $('#titleModal').text('Add Article');
+
             })
             $('#save').click(function(){
                 console.log($('#title').val())
                 article.TITLE = $('#title').val()
                 article.DESCRIPTION = $('#desc').val()
-                addArticle(article)
-               //hide modal 
-                $('#articleModal').modal('hide')
+                let id = $('#idArticle').val()
+                console.log(`id edit ${id}`)
+                if ($('#titleModal').text() == "Add Article"){
+                    addArticle(article)
+                }else{
+                    updateArticle(id, article)
+                }
+                $('#articleModal').modal('hide');
             })
         })
 
@@ -96,28 +101,12 @@
                 }
             })
         }
-
-        function loadDataJS() {
-            var x = new XMLHttpRequest();
-            x.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    //json.parse 
-                    // console.log(JSON.parse(this.response));
-                    console.log(this.response)
-                }
-            }
-            x.open("GET", "http://api-ams.me/v1/api/articles?page=1&limit=15")
-            x.send()
-        }
         //request data by jquery function
-        function loadData() {
+        function fetchArticle() {
             $.ajax({
                 url: "http://api-ams.me/v1/api/articles?page=1&limit=5",
                 method: "GET",
                 success: function (response) {
-                    console.log(response);
-
-                    //append data in table
                     showDataToTable(response.DATA)
                 },
                 error: function (er) {
@@ -133,52 +122,17 @@
                     `
                     <tr>
                         <td class="ID">${a.ID}</td>
-                        <td>${a.TITLE}</td>
-                        <td>${a.DESCRIPTION}</td>
+                        <td class="t">${a.TITLE}</td>
+                        <td class="d">${a.DESCRIPTION}</td>
                         <td><img class="img-thumbnail" src=${a.IMAGE} /></td>
-                        <td><button class="btn btn-outline-primary wave-effect" onclick="deleteArticle(this)">DELETE</button><button class="btn btn-outline-primary wave-effect">EDIT</button></td>
+                        <td>
+                            <button class="btn btn-outline-primary wave-effect" onclick="deleteArticle(this)">DELETE</button>
+                            <button class="btn btn-outline-primary wave-effect" onclick="showModal(this)">EDIT</button>
+                        </td>
                     </tr>
                 `
             }
             $('tbody').html(content)
-        }
-
-        function loadImage() {
-            $.ajax({
-                url: "https://jsonplaceholder.typicode.com/photos",
-                method: "GET",
-                success: function (res) {
-                    console.log(res);
-                    loadTable(res)
-                },
-                error: function (er) {
-                    console.log(er)
-                }
-            })
-        }
-
-        function loadTable(data) {
-            var content = ""
-            for (a of data) {
-                content +=
-                    `
-                    <tr>
-                        <td>${a.albumId}</td>
-                        <td>${a.id}</td>
-                        <td>${a.title}</td>
-                        <td><img class="img-thumbnail" src=${a.thumbnailUrl} /></td>
-                        <td><button class="btn btn-outline-primary wave-effect">DELETE</button><button class="btn btn-outline-primary wave-effect">EDIT</button></td>
-                    </tr>
-                `
-            }
-            $('tbody').html(content)
-        }
-
-        //load data using $.get(url, )
-        function fetchArticle() {
-            $.get("http://api-ams.me/v1/api/articles?page=1&limit=5", function (res) {
-                showDataToTable(res.DATA)
-            })
         }
 
         function deleteArticle(btn) {
@@ -199,6 +153,34 @@
                 })
             }
 
+        }
+        function showModal(editButton){
+            console.log(editButton)
+            let t = $(editButton).parents('tr').find('.t').text()
+            let d = $(editButton).parents('tr').find('.d').text()
+            console.log(t, d)
+            $('#title').val(t);
+            $('#desc').val(d)
+            $('#idArticle').val($(editButton).parents('tr').find('.ID').text())
+            $('#articleModal').modal('show')
+            $('#titleModal').text('Edit Article');
+
+        }
+        function updateArticle(id, article){
+            $.ajax({
+                url: "http://api-ams.me/v1/api/articles/"+id,
+                method: "PUT",
+                headers: {
+                    "content-type": "application/json"
+                },
+                data: JSON.stringify(article),
+                success: function(){
+                    fetchArticle()
+                },
+                error: function(er){
+                    console.log(er)
+                }
+            })
         }
     </script>
 

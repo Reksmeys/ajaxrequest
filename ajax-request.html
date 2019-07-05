@@ -14,6 +14,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/css/mdb.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 </head>
 
 <body>
@@ -47,10 +48,11 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th scope="col">ID</th>
+                <th scope="col">TITLE</th>
+                <th scope="col">DESCRIPTION</th>
+                <th scope="col">THUMNAIL</th>
+                <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
@@ -64,27 +66,28 @@
                 TITLE: "",
                 DESCRIPTION: ""
             }
-            $('#callModal').click(function(){
+            $('#callModal').click(function () {
+
                 $('#articleModal').modal('show')
                 $('#titleModal').text('Add Article');
 
             })
-            $('#save').click(function(){
+            $('#save').click(function () {
                 console.log($('#title').val())
                 article.TITLE = $('#title').val()
                 article.DESCRIPTION = $('#desc').val()
                 let id = $('#idArticle').val()
                 console.log(`id edit ${id}`)
-                if ($('#titleModal').text() == "Add Article"){
+                if ($('#titleModal').text() == "Add Article") {
                     addArticle(article)
-                }else{
-                    updateArticle(id, article)
+                } else {
+                   updateArticle(id, article)
                 }
                 $('#articleModal').modal('hide');
             })
         })
 
-        function addArticle(article){
+        function addArticle(article) {
             //title & description
             $.ajax({
                 url: "http://api-ams.me/v1/api/articles",
@@ -93,10 +96,10 @@
                     "content-type": "application/json"
                 },
                 data: JSON.stringify(article),
-                success: function(){
+                success: function (res) {
                     fetchArticle()
                 },
-                error: function(er){
+                error: function (er) {
                     console.log(er)
                 }
             })
@@ -133,28 +136,25 @@
                 `
             }
             $('tbody').html(content)
-        }
+        }        
 
         function deleteArticle(btn) {
-            // let id = $(btn).parents('tr').find('td')[0].innerHTML
-            let c = confirm("Are you sure to delete this item?")
-            if (c == true) {
-                let id = $(btn).parents('tr').find('.ID').text()
-                console.log(id);
-                $.ajax({
-                    url: "http://api-ams.me/v1/api/articles/" + id,
-                    method: "DELETE",
-                    success: function (res) {
-                        fetchArticle()
-                    },
-                    error: function (er) {
-                        console.log(er);
-                    }
-                })
-            }
-
+            let id  = $(btn).parents('tr').find('.ID').text()
+            $.ajax({
+                url: "http://api-ams.me/v1/api/articles/" + id,
+                method: "DELETE",
+                success: function (res) {
+                    fetchArticle()
+                },
+                error: function (er) {
+                    console.log(er);
+                }
+            })
         }
-        function showModal(editButton){
+
+       
+
+        function showModal(editButton) {
             console.log(editButton)
             let t = $(editButton).parents('tr').find('.t').text()
             let d = $(editButton).parents('tr').find('.d').text()
@@ -164,20 +164,20 @@
             $('#idArticle').val($(editButton).parents('tr').find('.ID').text())
             $('#articleModal').modal('show')
             $('#titleModal').text('Edit Article');
-
         }
-        function updateArticle(id, article){
+
+        function updateArticle(id, article) {
             $.ajax({
-                url: "http://api-ams.me/v1/api/articles/"+id,
+                url: "http://api-ams.me/v1/api/articles/" + id,
                 method: "PUT",
                 headers: {
                     "content-type": "application/json"
                 },
                 data: JSON.stringify(article),
-                success: function(){
+                success: function () {
                     fetchArticle()
                 },
-                error: function(er){
+                error: function (er) {
                     console.log(er)
                 }
             })
@@ -185,13 +185,13 @@
     </script>
 
     <!-- JQuery -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!-- Bootstrap tooltips -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<!-- MDB core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/js/mdb.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.3/js/mdb.min.js"></script>
 </body>
 
 </html>
